@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Polystar — 言葉から、一曲を。（社内検討用・非公式試作）</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@200;300;400;500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#FCFCFC;--ink:#1A1A1A;--ink-2:#474747;--ink-3:#8C8C8C;--ink-4:#BDBDBD;
+    --line:#ECECEC;--line-2:#D9D9D9;--ease:cubic-bezier(.19,.78,.22,1);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--bg);color:var(--ink);
+    font-family:"Hiragino Kaku Gothic ProN","Hiragino Sans","Noto Sans JP",system-ui,sans-serif;
+    font-weight:300;line-height:2;letter-spacing:.02em;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;}
+  .wrap{max-width:760px;margin:0 auto;padding:0 34px;}
+  ::selection{background:#EAEAEA;}
+  a{color:inherit;}
+
+  /* header */
+  header.nav{position:fixed;top:0;left:0;right:0;z-index:50;background:rgba(252,252,252,.78);backdrop-filter:saturate(120%) blur(10px);border-bottom:1px solid transparent;transition:border-color .4s,background .4s;}
+  header.nav.scrolled{border-bottom-color:var(--line);}
+  .nav-in{max-width:760px;margin:0 auto;padding:18px 34px;display:flex;align-items:center;justify-content:space-between;}
+  .wordmark{font-size:14px;letter-spacing:.26em;font-weight:400;color:var(--ink);text-decoration:none;}
+  .nav-links{display:flex;gap:30px;}
+  .nav-links a{font-size:12.5px;letter-spacing:.08em;color:var(--ink-3);text-decoration:none;font-weight:300;transition:color .2s;}
+  .nav-links a:hover{color:var(--ink);}
+
+  /* hero */
+  .hero{padding:160px 0 30px;}
+  .hero .eyebrow{font-size:11.5px;letter-spacing:.2em;color:var(--ink-4);margin:0 0 30px;font-weight:400;text-transform:uppercase;}
+  .hero h1{font-weight:400;font-size:clamp(26px,4vw,42px);line-height:1.65;letter-spacing:.05em;margin:0 0 30px;color:var(--ink);}
+  .hero .sub{font-size:15px;line-height:2.1;color:var(--ink-2);max-width:33em;margin:0;font-weight:300;}
+
+  .promptbox{margin:62px 0 0;}
+  .field{display:flex;align-items:flex-end;gap:18px;border-bottom:1px solid var(--line-2);padding:0 0 13px;transition:border-color .4s var(--ease);}
+  .field.focus{border-bottom-color:var(--ink);}
+  .field textarea{border:0;outline:0;background:transparent;resize:none;width:100%;padding:6px 0;font-family:inherit;font-size:17px;line-height:1.7;color:var(--ink);font-weight:300;}
+  .field textarea::placeholder{color:var(--ink-4);font-weight:300;}
+  .submit{flex:none;background:none;border:0;cursor:pointer;font-family:inherit;font-size:14px;color:var(--ink);letter-spacing:.1em;padding:6px 0;white-space:nowrap;opacity:.55;transition:opacity .3s;}
+  .field.focus .submit,.submit:hover{opacity:1;}
+  .hint{font-size:11.5px;color:var(--ink-4);margin:15px 0 0;letter-spacing:.03em;font-weight:300;}
+
+  .examples{margin-top:52px;}
+  .examples .lab{font-size:12px;color:var(--ink-3);margin:0 0 6px;font-weight:400;letter-spacing:.05em;}
+  .exrow{display:flex;flex-direction:column;}
+  .ex{text-align:left;background:none;border:0;border-top:1px solid var(--line);cursor:pointer;font-family:inherit;font-size:14.5px;color:var(--ink-2);font-weight:300;padding:16px 2px;transition:color .22s,padding-left .35s var(--ease);letter-spacing:.02em;display:flex;justify-content:space-between;align-items:center;gap:14px;}
+  .ex:last-child{border-bottom:1px solid var(--line);}
+  .ex:hover{color:var(--ink);padding-left:14px;}
+  .ex .ar{color:var(--ink-4);font-size:13px;opacity:0;transform:translateX(-6px);transition:.3s var(--ease);}
+  .ex:hover .ar{opacity:1;transform:none;}
+
+  .ailine{margin:66px 0 0;font-size:12.5px;color:var(--ink-3);line-height:2.05;border-top:1px solid var(--line);padding-top:28px;font-weight:300;}
+  .ailine b{color:var(--ink-2);font-weight:400;}
+
+  /* result */
+  .result{margin:0;}
+  .thinking{padding:78px 0;text-align:center;opacity:0;transition:opacity .35s;pointer-events:none;}
+  .thinking.on{opacity:1;}
+  .thinking .label{font-size:13px;letter-spacing:.14em;color:var(--ink-3);font-weight:300;}
+  .thinking .dots{display:inline-flex;gap:6px;margin-left:10px;vertical-align:middle;}
+  .thinking .dots i{width:4px;height:4px;border-radius:50%;background:var(--ink-3);display:inline-block;animation:blink 1.3s var(--ease) infinite;}
+  .thinking .dots i:nth-child(2){animation-delay:.18s;}
+  .thinking .dots i:nth-child(3){animation-delay:.36s;}
+  @keyframes blink{0%,100%{opacity:.18;transform:translateY(0);}40%{opacity:1;transform:translateY(-3px);}}
+
+  .answer .qecho{font-size:12.5px;color:var(--ink-3);margin:80px 0 0;font-weight:300;}
+  .answer .qecho b{color:var(--ink-2);font-weight:400;}
+  .pick{padding:36px 0 8px;}
+  .pick>*{opacity:0;transform:translateY(12px);transition:opacity .8s var(--ease),transform .8s var(--ease);}
+  .answer.in .pick>*{opacity:1;transform:none;}
+  .answer.in .pick>*:nth-child(1){transition-delay:.05s;}
+  .answer.in .pick>*:nth-child(2){transition-delay:.13s;}
+  .answer.in .pick>*:nth-child(3){transition-delay:.21s;}
+  .answer.in .pick>*:nth-child(4){transition-delay:.32s;}
+  .answer.in .pick>*:nth-child(5){transition-delay:.42s;}
+  .answer.in .pick>*:nth-child(6){transition-delay:.5s;}
+  .answer.in .pick>*:nth-child(7){transition-delay:.58s;}
+  .pick .no{font-size:11px;letter-spacing:.2em;color:var(--ink-4);margin-bottom:28px;font-weight:400;}
+  .pick .artist{font-size:13px;color:var(--ink-3);margin:0 0 12px;font-weight:400;letter-spacing:.05em;}
+  .pick h2{font-weight:400;font-size:clamp(25px,3.8vw,37px);line-height:1.55;letter-spacing:.05em;margin:0 0 10px;color:var(--ink);}
+  .pick .roman{font-size:13px;color:var(--ink-4);margin:0 0 40px;font-weight:300;letter-spacing:.05em;}
+  .reason{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:30px 0;margin:0 0 38px;}
+  .reason .rh{font-size:10.5px;letter-spacing:.2em;color:var(--ink-4);margin:0 0 14px;font-weight:400;text-transform:uppercase;}
+  .reason p{font-size:16px;line-height:2.2;color:var(--ink);margin:0;font-weight:300;letter-spacing:.02em;}
+  .pick .prose{font-size:14.5px;line-height:2.15;color:var(--ink-2);margin:0 0 40px;max-width:32em;font-weight:300;}
+  .pick .foot{display:flex;align-items:baseline;gap:30px;flex-wrap:wrap;}
+  .pick .meta{font-size:12px;color:var(--ink-3);letter-spacing:.04em;line-height:1.95;font-weight:300;}
+  .pick .meta b{color:var(--ink-2);font-weight:400;}
+  .pick .listen{margin-left:auto;font-size:13px;color:var(--ink);text-decoration:none;border-bottom:1px solid var(--line-2);padding-bottom:3px;font-weight:300;white-space:nowrap;transition:border-color .25s;}
+  .pick .listen:hover{border-bottom-color:var(--ink);}
+  .alt{margin-top:40px;font-size:12.5px;color:var(--ink-3);font-weight:300;}
+  .alt b{color:var(--ink-2);font-weight:400;}
+  .demoflag{margin-top:26px;font-size:11.5px;color:var(--ink-3);border-left:1px solid var(--line-2);padding:2px 0 2px 16px;line-height:1.95;font-weight:300;}
+
+  /* sections */
+  section.block{padding:90px 0;border-top:1px solid var(--line);}
+  .sec-label{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-4);margin:0 0 40px;font-weight:400;}
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:34px;}
+  .step .n{font-size:12px;color:var(--ink-4);letter-spacing:.1em;margin:0 0 14px;font-weight:400;}
+  .step h3{font-weight:400;font-size:16px;margin:0 0 10px;letter-spacing:.04em;color:var(--ink);}
+  .step p{font-size:13px;line-height:2;color:var(--ink-3);margin:0;font-weight:300;}
+
+  /* catalog marquee */
+  .catalog-lead{font-size:15px;line-height:2.1;color:var(--ink-2);font-weight:300;margin:0 0 40px;max-width:30em;}
+  .marquee{overflow:hidden;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:26px 0;-webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);}
+  .track{display:flex;width:max-content;animation:marquee 34s linear infinite;}
+  .track:hover{animation-play-state:paused;}
+  .track span{font-size:19px;color:var(--ink-2);font-weight:300;letter-spacing:.04em;padding:0 34px;white-space:nowrap;}
+  .track span::after{content:"·";color:var(--ink-4);margin-left:34px;}
+  @keyframes marquee{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+
+  /* reveal */
+  .reveal{opacity:0;transform:translateY(22px);transition:opacity 1s var(--ease),transform 1s var(--ease);}
+  .reveal.in{opacity:1;transform:none;}
+  .d1{transition-delay:.08s;}.d2{transition-delay:.16s;}.d3{transition-delay:.24s;}
+
+  /* hero load anim */
+  .rise{opacity:0;transform:translateY(18px);animation:rise 1s var(--ease) forwards;}
+  .r1{animation-delay:.15s;}.r2{animation-delay:.3s;}.r3{animation-delay:.46s;}.r4{animation-delay:.64s;}.r5{animation-delay:.82s;}
+  @keyframes rise{to{opacity:1;transform:none;}}
+
+  footer{border-top:1px solid var(--line);padding:54px 0 110px;}
+  .foot-top{display:flex;justify-content:space-between;align-items:flex-start;gap:30px;flex-wrap:wrap;margin-bottom:44px;}
+  footer .en{font-size:14px;color:var(--ink-2);font-weight:300;letter-spacing:.04em;max-width:24em;line-height:1.9;}
+  .foot-nav{display:flex;flex-direction:column;gap:9px;text-align:right;}
+  .foot-nav a{font-size:12.5px;color:var(--ink-3);text-decoration:none;font-weight:300;letter-spacing:.06em;transition:color .2s;}
+  .foot-nav a:hover{color:var(--ink);}
+  footer .note{font-size:11px;line-height:2.05;color:var(--ink-4);font-weight:300;border-top:1px solid var(--line);padding-top:24px;}
+  footer .note b{color:var(--ink-3);font-weight:400;}
+
+  @media(max-width:680px){
+    .wrap,.nav-in{padding-left:22px;padding-right:22px;}
+    .hero{padding:120px 0 24px;}.nav-links{gap:18px;}
+    .field textarea{font-size:16px;}.pick .listen{margin-left:0;}
+    .steps{grid-template-columns:1fr;gap:26px;}
+    .foot-top{flex-direction:column;}.foot-nav{text-align:left;}
+  }
+</style>
+</head>
+<body>
+
+<header class="nav" id="nav">
+  <div class="nav-in">
+    <a class="wordmark" href="#top">POLYSTAR</a>
+    <nav class="nav-links">
+      <a href="#top">探す</a>
+      <a href="#how">仕組み</a>
+      <a href="#catalog">収録</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap" id="top">
+
+  <section class="hero">
+    <p class="eyebrow rise r1">Catalog &mdash; Find by Words</p>
+    <h1 class="rise r2">言葉で、場面を。<br />あとは、この音が応えます。</h1>
+    <p class="sub rise r3">映画のワンシーン、店の夕暮れ、ブランドの映像、夜にふと流したい一曲。どんな場面でも、その気分を言葉で伝えてください。ポリスターが生み出してきた原盤の中から、選んでお応えします。</p>
+
+    <div class="promptbox rise r4">
+      <div class="field" id="field">
+        <textarea id="q" rows="1" placeholder="夏の終わりの、少し切ない別れの場面に。"></textarea>
+        <button class="submit" id="go">選ぶ &rarr;</button>
+      </div>
+      <p class="hint">場面・気分・色・時間——曖昧なままで構いません。</p>
+    </div>
+
+    <div class="examples rise r5">
+      <p class="lab">たとえば</p>
+      <div class="exrow" id="exrow"></div>
+    </div>
+
+    <p class="ailine rise r5"><b>四十年分の原盤を、一曲ずつ言葉に翻訳してあります。</b>あなたの言葉と最も響き合う音を、その手がかりから選び出す。機械が音を作るのではなく、ポリスターの目利きを、言葉で引き出すだけ。ブランドの品格はそのままに、出会い方だけが新しくなります。</p>
+  </section>
+
+  <section class="result">
+    <div class="thinking" id="thinking"><span class="label">聴いています</span><span class="dots"><i></i><i></i><i></i></span></div>
+    <div id="answer"></div>
+  </section>
+
+  <section class="block" id="how">
+    <p class="sec-label reveal">仕組み</p>
+    <div class="steps">
+      <div class="step reveal d1"><p class="n">01</p><h3>言葉で伝える</h3><p>場面でも、気分でも、色でも。曖昧なままの一言で構いません。</p></div>
+      <div class="step reveal d2"><p class="n">02</p><h3>言葉と原盤を重ねる</h3><p>原盤一曲ずつに付けた手がかりと、いただいた言葉の温度を照らし合わせます。</p></div>
+      <div class="step reveal d3"><p class="n">03</p><h3>一曲が、応える</h3><p>選んだ理由を添えて。なぜその音なのかが、言葉で残ります。</p></div>
+    </div>
+  </section>
+
+  <section class="block" id="catalog">
+    <p class="sec-label reveal">収録</p>
+    <p class="catalog-lead reveal">渋谷系から歌謡、シティポップまで。四十年分の原盤が、ここにあります。</p>
+  </section>
+</div>
+
+<div class="marquee reveal">
+  <div class="track" id="track"></div>
+</div>
+
+<div class="wrap">
+  <footer>
+    <div class="foot-top">
+      <p class="en">Human Made Music,<br />found by intelligence.</p>
+      <nav class="foot-nav">
+        <a href="#top">探す</a>
+        <a href="#how">仕組み</a>
+        <a href="#catalog">収録</a>
+      </nav>
+    </div>
+    <p class="note">※ 試作です。掲載楽曲・解説はサンプルであり、対象曲・データは御社の保有原盤をもとに確定します。音源は参考リンク（検索）を仮に当てています。言葉からの選曲は、原盤一曲ずつに付けた手がかり（ムード・場面・質感）をもとにしています。例として用意した言葉では、その選曲の意図までご覧いただけます。</p>
+  </footer>
+</div>
+
+<script>
+const WORKS = {
+  subaru:{artistJa:"谷村新司",title:"昴 -すばる-",roman:"Shinji Tanimura, 1980",year:"1980",genre:"歌謡 / バラード",scene:"旅立ち・卒業／夜空",
+    prose:"アリスを離れた谷村新司が、誰に向けるでもなく空へ放った歌。流行の外側で、いまも旅立ちのたびに誰かの声で繰り返されています。",
+    keys:["旅立ち","卒業","荘厳","夜","空","別れ","決意","背中","壮大","自然","感動","人生","節目","高揚"], yt:"谷村新司 昴"},
+  lamp:{artistJa:"Lamp",title:"東京ユウトピア通信",roman:"Lamp, 2011",year:"2011",genre:"シティポップ / ボサノヴァ",scene:"夏の終わり／都会の夜",
+    prose:"夕方の、まだ灯りをつけていない部屋の色をした音楽。海の向こうのリスナーが先に気づき、いまも静かに増え続けています。",
+    keys:["夏","切ない","都会","夜","ノスタルジック","上品","余韻","回想","別れ","温かい","車窓","シティポップ","洗練","海外"], yt:"Lamp 東京ユウトピア通信"},
+  flippers:{artistJa:"フリッパーズ・ギター",title:"恋とマシンガン",roman:"Flipper's Guitar, 1991",year:"1991",genre:"渋谷系 / ネオアコ",scene:"青春・街歩き／ファッション",
+    prose:"渋谷系という言葉が生まれる前の、その出発点。三十年を経て古びるどころか、いまの感性に“新品のレトロ”として届きます。",
+    keys:["おしゃれ","軽やか","都会","青春","街","昼下がり","疾走","ファッション","渋谷系","レトロ","爽やか","若い","ポップ"], yt:"フリッパーズ・ギター 恋とマシンガン"},
+  kahimi:{artistJa:"カヒミ・カリィ",title:"Mike Alway's Diary",roman:"Kahimi Karie, 1992",year:"1992",genre:"渋谷系 / フレンチポップ",scene:"香水・モード／アートハウス",
+    prose:"フレンチポップと渋谷系の美意識が、ひとりの囁きに宿った瞬間。意味より先に、香りや手触りとして記憶に残ります。",
+    keys:["上品","香り","モード","ブランド","親密","静け","内省","耽美","フレンチ","アート","おしゃれ","質感","囁き","繊細","余韻"], yt:"カヒミ・カリィ Mike Alway's Diary"},
+  wink:{artistJa:"Wink",title:"淋しい熱帯魚",roman:"Wink, 1989",year:"1989",genre:"シンセポップ / 歌謡",scene:"80sノスタルジー／ネオンと孤独",
+    prose:"二人は、ほとんど笑わない。その無表情こそが、80年代の終わりの都会の体温でした。これ以上ないレトロフューチャー。",
+    keys:["孤独","ネオン","夜","都会","切ない","クール","80s","レトロ","シンセ","醒めた","ひとり","ノスタルジー"], yt:"Wink 淋しい熱帯魚"},
+  winklove:{artistJa:"Wink",title:"愛が止まらない ~Turn It Into Love~",roman:"Wink, 1988",year:"1988",genre:"シンセポップ / アイドル",scene:"80sポップ／ときめき・恋のはじまり",
+    prose:"二人の無表情の奥で、心拍だけが速くなっていく。海の向こうのダンスポップを、あの透明な距離感で日本のポップスに変えてしまった一曲。",
+    keys:["恋","ときめき","華やか","80s","ポップ","ダンス","切ない","はじまり","高鳴る","アイドル","都会","軽やか"], yt:"Wink 愛が止まらない"},
+  flippers_camera:{artistJa:"フリッパーズ・ギター",title:"カメラ!カメラ!カメラ!",roman:"Flipper's Guitar, 1990",year:"1990",genre:"渋谷系 / ギターポップ",scene:"旅・きらめき／カラフルな日常",
+    prose:"シャッターを切るたびに、世界が少しまぶしくなる。ネオアコの軽やかさと、英国ポップへの憧れが弾けた一曲。旅やきらめく日常の映像に、そのまま光を足します。",
+    keys:["旅","きらめき","軽やか","カラフル","青春","渋谷系","ポップ","爽やか","光","日常","おしゃれ"], yt:"フリッパーズ・ギター カメラ"},
+  lampyume:{artistJa:"Lamp",title:"ゆめ",roman:"Lamp, 2014",year:"2014",genre:"シティポップ / ドリームポップ",scene:"まどろみ／夢と現のあいだ",
+    prose:"目を閉じた時に見える、淡い色の音楽。Lampが描く、夢と現実の境目。深夜やまどろみ、内省的な映像に、そっと溶けていきます。",
+    keys:["夢","まどろみ","内省","淡い","夜","幻想","静け","ノスタルジック","シティポップ","余韻","眠り","都会"], yt:"Lamp ゆめ"},
+  gunjo:{artistJa:"谷村新司",title:"群青",roman:"Shinji Tanimura, 1981",year:"1981",genre:"歌謡 / バラード",scene:"海・別れ／壮大な余韻",
+    prose:"深い青へ沈んでいくような、別れの歌。「昴」の荘厳さを、今度は海へ向けた一曲。大きな自然や惜別の場面に、深い余韻を残します。",
+    keys:["海","別れ","壮大","荘厳","青","惜別","余韻","自然","切ない","歌謡","深い","旅立ち"], yt:"谷村新司 群青"},
+  girly:{artistJa:"カヒミ・カリィ",title:"Girly",roman:"Kahimi Karie, 1994",year:"1994",genre:"渋谷系 / フレンチポップ",scene:"少女性・モード／甘い気だるさ",
+    prose:"甘く、少しけだるい午後のような声。フレンチポップの感性を、より無邪気に解き放った一枚。モードでありながら親密な、独特の空気をまといます。",
+    keys:["甘い","けだるい","少女","モード","フレンチ","おしゃれ","親密","午後","渋谷系","気だるい","上品","静け"], yt:"カヒミ・カリィ Girly"}
+};
+
+const EXAMPLES = [
+  {q:"夏の終わりの、少し切ない別れの場面に", key:"lamp",
+   reason:"「別れの切なさ」を、はっきり泣かせるのではなく、過ぎた時間の温度として残す一曲です。Lampのこの曲は、夏の終わりの光をそのまま音にしています。映像の余白に、その余韻が静かに広がります。"},
+  {q:"旅立ちの朝、静かに背中を押すような", key:"subaru",
+   reason:"「背中を押す」を、励ましの言葉でなく荘厳さで叶えます。声が空へ開いていく瞬間が、旅立つ人の決意にそのまま重なる——おそらく日本で最もそれができる一曲です。"},
+  {q:"おしゃれな都会の昼下がり、軽やかに", key:"flippers",
+   reason:"「軽やか」と「おしゃれ」を、媚びずに鳴らせる稀有な曲です。渋谷系の原点の疾走感が、何でもない昼下がりの街を、少しだけ素敵に見せます。"},
+  {q:"ネオンの夜、ひとりの孤独に寄り添う", key:"wink",
+   reason:"孤独を慰めず、ただ隣にいる音楽です。冷たいシンセと醒めたメロディが、ネオンと夜の孤独にそのまま溶けていきます。"},
+  {q:"上質なブランドの、香りのような余韻を", key:"kahimi",
+   reason:"音そのものが「香り」になる、稀有な声です。説明を一切せず、質感だけでブランドの世界観を立ち上げます。広告・モードの映像が長く探してきた質感が、ここにあります。"},
+  {q:"胸が高鳴る、80年代の恋のはじまりに", key:"winklove",
+   reason:"華やかなときめきと、80年代の透明な距離感。Wink「愛が止まらない」は、恋のはじまりの浮き立つ気持ちを、品よく画面に乗せます。"},
+  {q:"まどろみの中、夢と現のあいだの時間に", key:"lampyume",
+   reason:"淡い色の、まどろみそのもの。Lamp「ゆめ」は、眠りと覚醒のあわいの質感です。深夜や内省の映像に、静かに溶けていきます。"},
+  {q:"旅立ちの船出、海へ向かう惜別の場面に", key:"gunjo",
+   reason:"「昴」の荘厳さを、今度は海へ向けた一曲。谷村新司「群青」は、深い青へ沈んでいく別れと、大きな自然の余韻を、画面に残します。"}
+];
+
+const ROSTER = ["フリッパーズ・ギター","カヒミ・カリィ","Wink","Lamp","SPIRAL LIFE","谷村新司"];
+
+const exMap = {}; EXAMPLES.forEach(e=>exMap[e.q]=e);
+const exrow=document.getElementById("exrow");
+EXAMPLES.forEach(e=>{ const b=document.createElement("button"); b.className="ex"; b.innerHTML="<span>「"+e.q+"」</span><span class='ar'>&rarr;</span>"; b.onclick=()=>{ document.getElementById("q").value=e.q; run(); }; exrow.appendChild(b); });
+
+const track=document.getElementById("track");
+[...ROSTER,...ROSTER].forEach(n=>{ const s=document.createElement("span"); s.textContent=n; track.appendChild(s); });
+
+const SYN={
+  "切ない":["せつない","哀愁","物悲し","寂し","さみし","胸が","泣け","哀し","郷愁"],
+  "夏":["真夏","晩夏","残暑","夏の"],"都会":["都市","街","シティ","ビル","東京"],
+  "夜":["深夜","真夜中","ナイト","宵","暗"],"旅立ち":["門出","出発","旅","新生活","巣立ち","船出","旅路"],
+  "卒業":["卒","門出"],"荘厳":["壮大","雄大","厳か","スケール","堂々"],
+  "上品":["上質","洗練","エレガント","気品","高級","品","優雅"],"軽やか":["軽快","爽やか","弾む","明る","快活"],
+  "おしゃれ":["スタイリッシュ","シック","洒落","粋"],"孤独":["ひとり","一人","孤高","独り"],
+  "ノスタルジック":["懐かし","郷愁","レトロ","ノスタル","思い出","回想","昔"],
+  "静け":["静か","しずか","落ち着","穏やか","ひそやか","清","凪"],"恋":["愛","ラブ","ときめき","恋愛","胸キュン","片思い"],
+  "青春":["若さ","学生","部活","青い","瑞々し","十代"],"別れ":["惜別","送別","さよなら","別離","離別"],
+  "海":["海辺","波","渚","ビーチ","潮","オーシャン"],"香り":["フレグランス","香水","匂い","薫り"],
+  "幻想":["夢","ドリーム","まどろみ","幻","ファンタジー","夢見"],"親密":["寄り添","そっと","密や","intimate"],
+  "クール":["冷た","醒め","ドライ","無表情","硬質"],"高揚":["高鳴","昂","ときめき","盛り上が","熱"],
+  "モード":["ファッション","モード","コレクション","ランウェイ"],"温かい":["あたたか","ぬくもり","優し"]
+};
+function scoreFree(query){
+  const q=query.toLowerCase();let best=null,bestScore=0,bestMatched=[];
+  for(const id in WORKS){const w=WORKS[id];let s=0;const m=[];
+    w.keys.forEach(k=>{ const vs=[k].concat(SYN[k]||[]);
+      if(vs.some(v=>q.includes(v.toLowerCase()))){ s+=2; m.push(k); } });
+    [w.scene,w.genre].forEach(t=>t.split(/[\/／・]/).forEach(p=>{p=p.trim(); if(p&&q.includes(p.toLowerCase()))s+=1;}));
+    if(s>bestScore){bestScore=s;best=id;bestMatched=m;}}
+  if(!best){ best=Object.keys(WORKS)[(query.length||1)%Object.keys(WORKS).length]; bestMatched=[]; }
+  return {key:best,matched:bestMatched,score:bestScore};
+}
+function run(){
+  const query=document.getElementById("q").value.trim(); if(!query) return;
+  const ex=exMap[query];
+  const thinking=document.getElementById("thinking"),answer=document.getElementById("answer");
+  answer.innerHTML=""; thinking.classList.add("on");
+  document.querySelector(".result").scrollIntoView({behavior:"smooth",block:"start"});
+  setTimeout(()=>{
+    thinking.classList.remove("on");
+    let key,reason,demoNote="";
+    if(ex){ key=ex.key; reason=ex.reason; }
+    else {
+      const r=scoreFree(query);
+      if(r.score===0){
+        answer.innerHTML=`<div class="answer"><p class="qecho">あなたの言葉： <b>「${escapeHtml(query)}」</b></p>
+          <article class="pick"><p class="no">うまく選びきれませんでした</p>
+          <h2 style="font-size:clamp(20px,2.6vw,26px);line-height:1.7;">この一言に確かに響く曲を、<br>まだ見つけきれません。</h2>
+          <p class="prose" style="margin-top:24px;">その言葉が、どんな場面や情景なのか——手前の風景を少し添えてみてください。たとえば「旅立ちの朝」「ひとりの夜」「やり直しの春」のように。</p>
+          <p class="demoflag">言葉に付けた手がかりと照らし合わせて選んでいるため、語彙の遠い一言には、まだ届かないことがあります。</p></article></div>`;
+        requestAnimationFrame(()=>requestAnimationFrame(()=>answer.querySelector(".answer").classList.add("in")));
+        return;
+      }
+      key=r.key; reason=buildReason(r,query);
+      demoNote=`<p class="demoflag">いただいた言葉と、原盤一曲ずつに付けた手がかりを照らし合わせて選んでいます。言葉を変えると、響き合う一曲も変わります。</p>`;
+    }
+    const w=WORKS[key];
+    answer.innerHTML=`<div class="answer">
+        <p class="qecho">あなたの言葉： <b>「${escapeHtml(query)}」</b></p>
+        <article class="pick">
+          <p class="no">この一曲を</p>
+          <p class="artist">${w.artistJa}</p>
+          <h2>${w.title}</h2>
+          <p class="roman">${w.roman}</p>
+          <div class="reason"><p class="rh">この一曲を選んだ理由</p><p>${reason}</p></div>
+          <p class="prose">${w.prose}</p>
+          <div class="foot">
+            <p class="meta"><b>${w.year}</b>　${w.genre}<br />${w.scene}</p>
+            <a class="listen" href="https://www.youtube.com/results?search_query=${encodeURIComponent(w.yt)}" target="_blank" rel="noopener">音を確かめる &rarr;</a>
+          </div>
+          ${demoNote}
+          <p class="alt">別の気分なら、言葉を変えてもう一度。<b>同じ場面でも、伝え方で選ばれる曲は変わります。</b></p>
+        </article>
+      </div>`;
+    requestAnimationFrame(()=>requestAnimationFrame(()=>answer.querySelector(".answer").classList.add("in")));
+  }, ex?1100:1300);
+}
+function buildReason(r,query){const w=WORKS[r.key];
+  const cue=(r.matched&&r.matched.length)?`「${r.matched.slice(0,3).join("・")}」という手がかり`:"いただいた言葉の温度";
+  return `${cue}から、${w.artistJa}「${w.title}」を選びました。${w.scene.replace("／","・")}の質感が、その響きに最も近い一曲です。`;}
+function escapeHtml(s){return s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+
+// interactions
+const field=document.getElementById("field"),qa=document.getElementById("q");
+qa.addEventListener("focus",()=>field.classList.add("focus"));
+qa.addEventListener("blur",()=>field.classList.remove("focus"));
+document.getElementById("go").addEventListener("click",run);
+qa.addEventListener("keydown",e=>{ if((e.metaKey||e.ctrlKey)&&e.key==="Enter") run(); });
+
+// header shadow on scroll
+const nav=document.getElementById("nav");
+window.addEventListener("scroll",()=>{ nav.classList.toggle("scrolled", window.scrollY>20); },{passive:true});
+
+// scroll reveal
+const io=new IntersectionObserver((es)=>{es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target);} });},{threshold:.18});
+document.querySelectorAll(".reveal").forEach(el=>io.observe(el));
+
+if(location.hash==="#demo"){ document.getElementById("q").value=EXAMPLES[0].q; run(); }
+else if(location.hash.indexOf("#q=")===0){ document.getElementById("q").value=decodeURIComponent(location.hash.slice(3)); run(); }
+</script>
+</body>
+</html>
