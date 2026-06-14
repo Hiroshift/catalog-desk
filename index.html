@@ -47,6 +47,15 @@
   .field.focus .submit,.submit:hover{opacity:1;}
   .hint{font-size:11.5px;color:var(--ink-4);margin:15px 0 0;letter-spacing:.03em;font-weight:300;}
 
+  .chips{margin-top:30px;display:flex;flex-direction:column;gap:13px;}
+  .chipgrp{display:grid;grid-template-columns:2.8em 1fr;align-items:start;gap:0 14px;}
+  .chipgrp .clab{font-size:11px;color:var(--ink-4);letter-spacing:.1em;padding-top:8px;font-weight:400;}
+  .chipset{display:flex;flex-wrap:wrap;gap:8px;}
+  .chip{background:none;border:1px solid var(--line-2);color:var(--ink-2);cursor:pointer;font-family:inherit;font-size:12.5px;font-weight:300;letter-spacing:.02em;padding:6px 13px;border-radius:2px;transition:border-color .25s var(--ease),color .25s;}
+  .chip:hover{border-color:var(--ink);color:var(--ink);}
+  .chipclear{align-self:flex-start;margin-top:2px;background:none;border:0;cursor:pointer;font-family:inherit;font-size:11px;color:var(--ink-4);letter-spacing:.06em;padding:2px 0;transition:color .25s;}
+  .chipclear:hover{color:var(--ink-2);}
+
   .examples{margin-top:52px;}
   .examples .lab{font-size:12px;color:var(--ink-3);margin:0 0 6px;font-weight:400;letter-spacing:.05em;}
   .exrow{display:flex;flex-direction:column;}
@@ -169,8 +178,10 @@
         <textarea id="q" rows="1" placeholder="夏の終わりの、少し切ない別れの場面に。"></textarea>
         <button class="submit" id="go">選ぶ &rarr;</button>
       </div>
-      <p class="hint">場面・気分・色・時間——曖昧なままで構いません。</p>
+      <p class="hint">場面・気分・色・時間——曖昧なままで構いません。言葉は重ねるほど、ぴたりと近づきます。</p>
     </div>
+
+    <div class="chips rise r5" id="chips"></div>
 
     <div class="examples rise r5">
       <p class="lab">たとえば</p>
@@ -305,6 +316,15 @@ const exMap = {}; EXAMPLES.forEach(e=>exMap[e.q]=e);
 const exrow=document.getElementById("exrow");
 EXAMPLES.forEach(e=>{ const b=document.createElement("button"); b.className="ex"; b.innerHTML="<span>「"+e.q+"」</span><span class='ar'>&rarr;</span>"; b.onclick=()=>{ document.getElementById("q").value=e.q; run(); }; exrow.appendChild(b); });
 
+const CHIPS={"気分":["切ない","クール","華やか","疾走","癒し","大人","元気","幻想的"],"場面":["夜のドライブ","旅立ち","都会の孤独","パーティ","海・船出","大人のバー","まどろみ","近未来"]};
+const chipsEl=document.getElementById("chips");
+for(const g in CHIPS){ const row=document.createElement("div"); row.className="chipgrp";
+  const lab=document.createElement("span"); lab.className="clab"; lab.textContent=g; row.appendChild(lab);
+  const set=document.createElement("div"); set.className="chipset";
+  CHIPS[g].forEach(w=>{ const c=document.createElement("button"); c.className="chip"; c.textContent=w; c.onclick=()=>{ const el=document.getElementById("q"); const cur=el.value.trim(); el.value=cur?cur+"　"+w:w; run(); }; set.appendChild(c); });
+  row.appendChild(set); chipsEl.appendChild(row); }
+const clr=document.createElement("button"); clr.className="chipclear"; clr.textContent="選び直す"; clr.onclick=()=>{ const el=document.getElementById("q"); el.value=""; el.focus(); }; chipsEl.appendChild(clr);
+
 const track=document.getElementById("track");
 [...ROSTER,...ROSTER].forEach(n=>{ const s=document.createElement("span"); s.textContent=n; track.appendChild(s); });
 
@@ -317,8 +337,8 @@ const SYN={
   "ネオン":["ネオン","繁華街","歓楽街","夜の街","ナイトシーン","夜景"],
   "旅立ち":["門出","出発","旅","新生活","巣立ち","船出","旅路","スタート","始まり","旅行","出発点","旅立"],
   "卒業":["卒","門出","新学期","春の別れ"],
-  "荘厳":["壮大","雄大","厳か","スケール","堂々","重厚","スケール感","威厳"],
-  "高揚":["高鳴","昂","ときめき","盛り上が","熱","胸が高鳴","アガる","アゲ","興奮","エモーショナル","昂ぶ"],
+  "荘厳":["壮大","雄大","厳か","スケール","堂々","重厚","スケール感","威厳","フィナーレ","エンディング","大団円","ラストシーン"],
+  "高揚":["高鳴","昂","ときめき","盛り上が","熱","胸が高鳴","アガる","アゲ","興奮","エモーショナル","昂ぶ","衝撃","急展開","山場","クライマックス","どんでん返し","逆転"],
   "上品":["上質","洗練","エレガント","気品","高級","品","優雅","ラグジュアリー","ブランド","高級感"],
   "軽やか":["軽快","軽い","弾む","明る","快活","ライト","ポップ","軽やか"],
   "爽やか":["さわやか","清々","フレッシュ","青空","風","快晴","すがすが","爽快","清涼"],
@@ -353,7 +373,7 @@ const SYN={
   "自然":["森","海","空","風","緑","アウトドア","景色","山","川","光","自然","木漏れ日"],
   "スウィング":["ジャズ","ビッグバンド","スウィンギー","ブラス","ホーン","ジャジー","スウィング"],
   "ポップ":["ポップ","キャッチー","明る","軽快","ノリ","ポップス"],
-  "シンセ":["シンセ","エレクトロ","電子","シンセサイザー"],
+  "シンセ":["シンセ","エレクトロ","電子","シンセサイザー","近未来","未来的","サイバー","SF","デジタル","無機質","レトロフューチャー"],
   "健気":["健気","けなげ","いじらし","ひたむき","一途"],
   "80s":["80年代","80s","エイティーズ","バブル"],
   "90s":["90年代","90s","ナインティーズ"],
