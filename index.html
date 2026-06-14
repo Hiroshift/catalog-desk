@@ -178,7 +178,7 @@
         <textarea id="q" rows="1" placeholder="夏の終わりの、少し切ない別れの場面に。"></textarea>
         <button class="submit" id="go">選ぶ &rarr;</button>
       </div>
-      <p class="hint">場面・気分・色・時間——曖昧なままで構いません。言葉は重ねるほど、ぴたりと近づきます。</p>
+      <p class="hint">場面・気分・色・時間——曖昧なままで構いません。下の言葉を重ねて選び、Enter（または「選ぶ」）でお応えします。</p>
     </div>
 
     <div class="chips rise r5" id="chips"></div>
@@ -321,7 +321,7 @@ const chipsEl=document.getElementById("chips");
 for(const g in CHIPS){ const row=document.createElement("div"); row.className="chipgrp";
   const lab=document.createElement("span"); lab.className="clab"; lab.textContent=g; row.appendChild(lab);
   const set=document.createElement("div"); set.className="chipset";
-  CHIPS[g].forEach(w=>{ const c=document.createElement("button"); c.className="chip"; c.textContent=w; c.onclick=()=>{ const el=document.getElementById("q"); const cur=el.value.trim(); el.value=cur?cur+"　"+w:w; run(); }; set.appendChild(c); });
+  CHIPS[g].forEach(w=>{ const c=document.createElement("button"); c.className="chip"; c.textContent=w; c.onclick=()=>{ const el=document.getElementById("q"); const cur=el.value.trim(); if(!(cur&&cur.includes(w))) el.value=cur?cur+"　"+w:w; el.focus(); el.setSelectionRange(el.value.length,el.value.length); }; set.appendChild(c); });
   row.appendChild(set); chipsEl.appendChild(row); }
 const clr=document.createElement("button"); clr.className="chipclear"; clr.textContent="選び直す"; clr.onclick=()=>{ const el=document.getElementById("q"); el.value=""; el.focus(); }; chipsEl.appendChild(clr);
 
