@@ -445,7 +445,7 @@ const field=document.getElementById("field"),qa=document.getElementById("q");
 qa.addEventListener("focus",()=>field.classList.add("focus"));
 qa.addEventListener("blur",()=>field.classList.remove("focus"));
 document.getElementById("go").addEventListener("click",run);
-qa.addEventListener("keydown",e=>{ if((e.metaKey||e.ctrlKey)&&e.key==="Enter") run(); });
+qa.addEventListener("keydown",e=>{ if(e.key==="Enter"&&!e.isComposing&&!e.shiftKey){ e.preventDefault(); run(); } });
 
 // header shadow on scroll
 const nav=document.getElementById("nav");
